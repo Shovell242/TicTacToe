@@ -1,24 +1,47 @@
 class GameBoard
 	attr_accessor :a, :b, :c, :d, :e, :f, :g, :h, :i
 
+	def initialize
+		default_space
+	end
+
 	def display
-		puts " #{a} | #{b} | #{c}\n" + 
-		     " --------\n" +
-		     " #{d} | #{e} | #{f}\n" +
-		     " --------\n" +
-		     " #{g} | #{h} | #{i}"
+		puts "#{a}|#{b}|#{c}\n" + 
+		     "---+---+---\n" +
+		     "#{d}|#{e}|#{f}\n" +
+		     "---+---+---\n" +
+		     "#{g}|#{h}|#{i}"
 	end
 
 	def key
-		puts " a | b | c\n d | e | f\n g | h | i"
+		puts " a | b | c \n" + 
+		     "---+---+---\n" +
+		     " d | e | f \n" +
+		     "---+---+---\n" +
+		     " g | h | i "
+	end
+
+	def default_space
+		("a".."i").each { |x| self.send("#{x}=", empty_space) }
+	end
+
+	def empty_space
+		"   "
 	end
 
 	def place_x( key )
-		self.send("#{key}").nil? ? (self.send("#{key}=", "X")):(puts "Sorry that spot is already taken!")
+		self.send("#{key}") == empty_space ? (self.send("#{key}=", " X ")):(occupied(:place_x))
 	end
 
 	def place_o( key )
-		self.send("#{key}").nil? ? (self.send("#{key}=", "O")):(puts "Sorry that spot is already taken!")
+		self.send("#{key}") == empty_space ? (self.send("#{key}=", " O ")):(occupied(:place_o))
+	end
+
+	def occupied( method )
+		puts "That spot is already taken!"
+		print "Please select another key "
+		key = gets.chomp
+		self.send(method, key)
 	end
 
 	def winning_combinations
@@ -26,13 +49,22 @@ class GameBoard
 	end
 
 	def scan_for_winner
-		winning_combinations.select { |x| !x.include? nil }.map { |x| x.uniq.count == 1 }
+		winning_combinations.select { |x| !x.include? empty_space }.map { |x| x.uniq.count == 1 }
 	end
 
 	def winner?
 		scan_for_winner.include? true ? true:false
 	end
+
+	def scan_for_draw
+		winning_combinations.flatten.count(empty_space)
+	end
+
+	def draw?
+		scan_for_draw == 0 
+	end
 end
+
 
 class Player
 	attr_reader   :player1, :player2, :gameboard
@@ -44,9 +76,9 @@ class Player
 	end
 
 	def first_move
-		print "#{player1} please select a key to place your X "
-		move = gets.chomp
-	 	gameboard.place_x(move)
+			print "#{player1} please select a key to place your X "
+			move = gets.chomp
+		 	gameboard.place_x(move) 
 	end
 
 	def second_move
