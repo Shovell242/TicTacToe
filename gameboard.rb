@@ -57,62 +57,7 @@ class GameBoard
 	end
 end
 
-class Player
-	attr_reader   :player1, :player2, :gameboard, :turn_order
 
-	def initialize( args = {} )
-		@player1    = args[:player1] || "player1"
-		@player2    = args[:player2] || "player2" 
-		@turn_order = [player1, player2]
-		@gameboard  = GameBoard.new
-	end
-
-	def switch_players
-		turn_order[0], turn_order[1] = turn_order[1], turn_order[0]
-	end
-
-	def game_info
-		gameboard.display
-		gameboard.key
-		puts ""
-	end
-
-	def end_game?
-		gameboard.winner? || gameboard.draw?
-	end
-
-	def end_message
-		puts gameboard.winner? ? "#{current_player} has won the game!" : "The game has ended in a draw" 
-	end
-
-	def play_again?
-		print "Do you want to play again? (y/n) "
-		answer = gets.chomp
-		answer == "y" ? (gameboard = GameBoard.new; gameboard.default_space; start_game) : (exit)
-	end
-
-	def current_player
-		turn_order.first
-	end
-
-	def make_move( player, turn )
-		print "ok #{player}! Make your move : "
-		move = gets.chomp
-		turn.even? ? (gameboard.place_x(move)):(gameboard.place_o(move))
-	end
-
-	def start_game
-		turn = 1
-		until end_game?
-			game_info
-			switch_players
-			make_move(current_player, turn)
-			turn += 1
-		end
-		end_message
-		play_again?
-	end
-end
 
 
 
